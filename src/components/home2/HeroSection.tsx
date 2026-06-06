@@ -11,7 +11,9 @@ const PARALLAX = [
   { mouse:  0.008, scroll: -0.04 },
 ];
 
-const IMAGE_BLOCKS = [
+type Block = { id: string; left: number; top: number; width: number; height: number; circle: boolean; gradient: string; delay: string; dur: string; videoSrc?: string; imageSrc?: string; };
+
+const IMAGE_BLOCKS: Block[] = [
   { id: 'r4',  left: 0,    top: 88,  width: 210, height: 155, circle: false,
     gradient: 'linear-gradient(145deg,#1838a0 0%,#3a70d8 45%,#d86828 100%)',               delay: '0s',    dur: '4.2s', videoSrc: '/hero8.mp4' },
   { id: 'r17', left: 530,  top: 110, width: 210, height: 148, circle: false,
