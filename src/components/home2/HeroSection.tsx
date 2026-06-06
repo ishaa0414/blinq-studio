@@ -13,23 +13,23 @@ const PARALLAX = [
 
 const IMAGE_BLOCKS = [
   { id: 'r4',  left: 0,    top: 88,  width: 210, height: 155, circle: false,
-    gradient: 'linear-gradient(145deg,#1838a0 0%,#3a70d8 45%,#d86828 100%)',               delay: '0s',    dur: '4.2s' },
+    gradient: 'linear-gradient(145deg,#1838a0 0%,#3a70d8 45%,#d86828 100%)',               delay: '0s',    dur: '4.2s', videoSrc: '/hero8.mp4' },
   { id: 'r17', left: 530,  top: 110, width: 210, height: 148, circle: false,
-    gradient: 'linear-gradient(175deg,#081650 0%,#1848c0 55%,#2878e0 100%)',               delay: '-1.8s', dur: '5.1s' },
+    gradient: 'linear-gradient(175deg,#081650 0%,#1848c0 55%,#2878e0 100%)',               delay: '-1.8s', dur: '5.1s', videoSrc: '/hero1.mp4' },
   { id: 'r1',  left: 1100, top: 82,  width: 240, height: 168, circle: false,
-    gradient: 'linear-gradient(140deg,#062224 0%,#097068 40%,#0e92b4 75%,#1e5ab8 100%)',  delay: '-3.1s', dur: '3.9s' },
-  { id: 'e15', left: -55,  top: 360, width: 165, height: 165, circle: true,
-    gradient: 'radial-gradient(circle,#c6e878 0%,#42ac3e 50%,#288432 100%)',               delay: '-0.6s', dur: '4.7s' },
+    gradient: 'linear-gradient(140deg,#062224 0%,#097068 40%,#0e92b4 75%,#1e5ab8 100%)',  delay: '-3.1s', dur: '3.9s', videoSrc: '/hero7.mp4' },
+  { id: 'e15', left: -65,  top: 340, width: 210, height: 210, circle: true,
+    gradient: 'radial-gradient(circle,#c6e878 0%,#42ac3e 50%,#288432 100%)',               delay: '-0.6s', dur: '4.7s', videoSrc: '/hero2.mp4' },
   { id: 'r2',  left: 55,   top: 530, width: 155, height: 215, circle: false,
-    gradient: 'linear-gradient(140deg,#560e2c 0%,#be3e5e 40%,#e28162 80%,#9e1c2e 100%)', delay: '-2.4s', dur: '5.3s' },
+    gradient: 'linear-gradient(140deg,#560e2c 0%,#be3e5e 40%,#e28162 80%,#9e1c2e 100%)', delay: '-2.4s', dur: '5.3s', videoSrc: '/hero7.mp4' },
   { id: 'r15', left: 1120, top: 600, width: 168, height: 218, circle: false,
-    gradient: 'linear-gradient(178deg,#076060 0%,#17aea0 30%,#de8e2e 62%,#ae2eae 100%)',  delay: '-1.2s', dur: '4.4s' },
-  { id: 'e14', left: 1210, top: 350, width: 290, height: 290, circle: true,
-    gradient: 'radial-gradient(circle,#ced8d4 0%,#7e8ca4 40%,#3e4656 75%,#1a2228 100%)', delay: '-0.9s', dur: '4.8s' },
+    gradient: 'linear-gradient(178deg,#076060 0%,#17aea0 30%,#de8e2e 62%,#ae2eae 100%)',  delay: '-1.2s', dur: '4.4s', videoSrc: '/hero5.mp4' },
+  { id: 'e14', left: 1190, top: 330, width: 360, height: 340, circle: false,
+    gradient: 'radial-gradient(circle,#ced8d4 0%,#7e8ca4 40%,#3e4656 75%,#1a2228 100%)', delay: '-0.9s', dur: '4.8s', videoSrc: '/hero5.mp4' },
 ];
 
-function ImageBlock({ width, height, circle, gradient, delay, dur }: {
-  width: number; height: number; circle: boolean; gradient: string; delay: string; dur: string;
+function ImageBlock({ width, height, circle, gradient, delay, dur, videoSrc, imageSrc }: {
+  width: number; height: number; circle: boolean; gradient: string; delay: string; dur: string; videoSrc?: string; imageSrc?: string;
 }) {
   return (
     <div style={{
@@ -41,7 +41,23 @@ function ImageBlock({ width, height, circle, gradient, delay, dur }: {
       animation: `hero-float ${dur} ease-in-out ${delay} infinite`,
       willChange: 'transform',
     }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 38% 32%, transparent 30%, rgba(0,0,0,0.30) 100%)' }} />
+      {videoSrc && (
+        <video
+          src={videoSrc}
+          autoPlay muted loop playsInline
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      )}
+      {imageSrc && (
+        <img
+          src={imageSrc}
+          alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      )}
+      {!videoSrc && !imageSrc && (
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 38% 32%, transparent 30%, rgba(0,0,0,0.30) 100%)' }} />
+      )}
     </div>
   );
 }
@@ -230,7 +246,7 @@ export default function HeroSection() {
           {IMAGE_BLOCKS.map((b, i) => (
             <div key={b.id} style={{ position: 'absolute', left: b.left, top: b.top, zIndex: 10 }}>
               <div ref={el => { parallaxRefs.current[i] = el; }} style={{ willChange: 'transform' }}>
-                <ImageBlock width={b.width} height={b.height} circle={b.circle} gradient={b.gradient} delay={b.delay} dur={b.dur} />
+                <ImageBlock width={b.width} height={b.height} circle={b.circle} gradient={b.gradient} delay={b.delay} dur={b.dur} videoSrc={'videoSrc' in b ? b.videoSrc : undefined} imageSrc={'imageSrc' in b ? b.imageSrc : undefined} />
               </div>
             </div>
           ))}
