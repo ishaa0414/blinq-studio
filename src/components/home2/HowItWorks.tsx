@@ -1,300 +1,331 @@
 'use client';
-import { motion } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
 
-// ── SVG helpers ───────────────────────────────────────────────────────────────
+const ARCHIVO       = 'var(--font-archivo), "Archivo", sans-serif';
+const ARCHIVO_BLACK = 'var(--font-archivo-black), "Archivo Black", sans-serif';
 
-function hexPath(r: number, cx = 100, cy = 100) {
-  const pts = Array.from({ length: 6 }, (_, i) => {
-    const a = (i * 60 - 90) * (Math.PI / 180);
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)] as [number, number];
-  });
+// ── Layout constants (px) ──────────────────────────────────────────────────────
+const CW = 260;                  // card width
+const GW = 76;                   // gap / arrow width between cards
+const ZZ = 124;                  // vertical zig-zag offset for odd cards
+const CH = 318;                  // approximate card height (illustration + text)
+const BH = CH + ZZ + 8;         // track height = 450
+const CE = Math.round(CH / 2);  // 159 — even-card vertical centre in track
+const CO = ZZ + CE;             // 283 — odd-card vertical centre in track
+
+// ── Illustrations ──────────────────────────────────────────────────────────────
+
+function IllustrationBriefing() {
   return (
-    `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} ` +
-    pts.slice(1).map(p => `L ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ') +
-    ' Z'
-  );
-}
-
-// ── Step 01 — Radar SVG ───────────────────────────────────────────────────────
-
-function RadarSVG() {
-  const spokes = Array.from({ length: 6 }, (_, i) => {
-    const a = (i * 60 - 90) * (Math.PI / 180);
-    return { x2: (100 + 80 * Math.cos(a)).toFixed(1), y2: (100 + 80 * Math.sin(a)).toFixed(1) };
-  });
-  const dots = [
-    ...Array.from({ length: 6 }, (_, i) => {
-      const a = (i * 60 - 90) * (Math.PI / 180);
-      return { cx: (100 + 55 * Math.cos(a)).toFixed(1), cy: (100 + 55 * Math.sin(a)).toFixed(1) };
-    }),
-    ...[0, 2].map(i => {
-      const a = (i * 60 - 90) * (Math.PI / 180);
-      return { cx: (100 + 30 * Math.cos(a)).toFixed(1), cy: (100 + 30 * Math.sin(a)).toFixed(1) };
-    }),
-  ];
-
-  return (
-    <svg viewBox="0 0 200 200" className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px]">
-      {[{ r: 30, op: 0.8, delay: 0 }, { r: 55, op: 0.4, delay: 0.2 }, { r: 80, op: 0.2, delay: 0.4 }].map(h => (
-        <motion.path key={h.r} d={hexPath(h.r)} fill="none" stroke="#111111"
-          strokeWidth={0.8} opacity={h.op}
-          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, delay: h.delay, ease: 'easeInOut' as const }} />
-      ))}
-      {spokes.map((s, i) => (
-        <motion.line key={i} x1="100" y1="100" x2={s.x2} y2={s.y2}
-          stroke="#111111" strokeWidth={0.6} opacity={0.3}
-          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.65 + i * 0.05, ease: 'easeOut' as const }} />
-      ))}
-      {dots.map((d, i) => (
-        <motion.circle key={i} cx={d.cx} cy={d.cy} r={3} fill="#111111"
-          initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 1.05 + i * 0.07 }} />
-      ))}
-      <motion.circle cx="100" cy="100" r={4} fill="#E05A00"
-        initial={{ scale: 0 }} whileInView={{ scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }} />
+    <svg viewBox="0 0 300 210" fill="none" style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <rect x="10" y="8" width="280" height="194" rx="14" fill="#fafaf8" stroke="#e5e5e5" strokeWidth="1.5"/>
+      <rect x="10" y="8" width="280" height="30" rx="14" fill="#efefef"/>
+      <rect x="10" y="26" width="280" height="12" fill="#efefef"/>
+      <circle cx="32" cy="23" r="5" fill="#ff5f57"/>
+      <circle cx="49" cy="23" r="5" fill="#febc2e"/>
+      <circle cx="66" cy="23" r="5" fill="#28c840"/>
+      <rect x="28" y="44" width="64" height="5" rx="2" fill="#d4d4d4"/>
+      <rect x="28" y="52" width="244" height="12" rx="4" fill="#fff" stroke="#e8e8e8"/>
+      <rect x="28" y="72" width="80" height="5" rx="2" fill="#d4d4d4"/>
+      <rect x="28" y="80" width="244" height="12" rx="4" fill="#fff" stroke="#e8e8e8"/>
+      <rect x="28" y="100" width="55" height="5" rx="2" fill="#d4d4d4"/>
+      <rect x="28" y="108" width="244" height="12" rx="4" fill="#fff" stroke="#e8e8e8"/>
+      <rect x="28" y="128" width="72" height="5" rx="2" fill="#d4d4d4"/>
+      <rect x="28" y="136" width="244" height="34" rx="4" fill="#fff" stroke="#e8e8e8"/>
+      <rect x="28" y="182" width="106" height="22" rx="7" fill="#FB4415"/>
+      <rect x="142" y="182" width="76" height="22" rx="7" fill="#f0f0f0"/>
     </svg>
   );
 }
 
-// ── Step 02 — Starburst SVG ───────────────────────────────────────────────────
-
-function StarburstSVG() {
-  const rays = Array.from({ length: 24 }, (_, i) => {
-    const a = (i * 15 - 90) * (Math.PI / 180);
-    const len = i % 2 === 0 ? 80 : 45;
-    return { x2: (100 + len * Math.cos(a)).toFixed(1), y2: (100 + len * Math.sin(a)).toFixed(1) };
-  });
-
+function IllustrationStrategy() {
   return (
-    <svg viewBox="0 0 200 200" className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px]">
-      <motion.circle cx="100" cy="100" r={85} fill="none" stroke="#111111"
-        strokeWidth={0.5} opacity={0.2}
-        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: 'easeInOut' as const }} />
-      {rays.map((r, i) => (
-        <motion.line key={i} x1="100" y1="100" x2={r.x2} y2={r.y2}
-          stroke="#111111" strokeWidth={0.7} opacity={0.5}
-          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.04 * i, ease: 'easeOut' as const }} />
-      ))}
-      <motion.circle cx="100" cy="100" r={8} fill="#111111"
-        initial={{ scale: 0 }} whileInView={{ scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }} />
+    <svg viewBox="0 0 300 210" fill="none" style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <rect x="10" y="8" width="280" height="194" rx="14" fill="#fafaf8" stroke="#e5e5e5" strokeWidth="1.5"/>
+      <rect x="10" y="8" width="280" height="30" rx="14" fill="#efefef"/>
+      <rect x="10" y="26" width="280" height="12" fill="#efefef"/>
+      <circle cx="32" cy="23" r="5" fill="#ff5f57"/>
+      <circle cx="49" cy="23" r="5" fill="#febc2e"/>
+      <circle cx="66" cy="23" r="5" fill="#28c840"/>
+      <rect x="18" y="46" width="80" height="148" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="28" y="58" width="56" height="5" rx="2" fill="#ddd"/>
+      <rect x="28" y="70" width="62" height="5" rx="2" fill="#FB4415" opacity="0.6"/>
+      <rect x="28" y="82" width="50" height="5" rx="2" fill="#ddd"/>
+      <rect x="28" y="94" width="58" height="5" rx="2" fill="#ddd"/>
+      <rect x="28" y="106" width="44" height="5" rx="2" fill="#ddd"/>
+      <rect x="28" y="118" width="54" height="5" rx="2" fill="#ddd"/>
+      <rect x="106" y="46" width="166" height="68" rx="7" fill="#FB4415" opacity="0.09"/>
+      <rect x="116" y="56" width="84" height="8" rx="3" fill="#ccc"/>
+      <rect x="116" y="70" width="140" height="5" rx="2" fill="#e0e0e0"/>
+      <rect x="116" y="80" width="120" height="5" rx="2" fill="#e0e0e0"/>
+      <rect x="116" y="90" width="130" height="5" rx="2" fill="#e0e0e0"/>
+      <rect x="106" y="122" width="50" height="64" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="163" y="122" width="50" height="64" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="220" y="122" width="52" height="64" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="113" y="130" width="36" height="28" rx="4" fill="#f0f0f0"/>
+      <rect x="170" y="130" width="36" height="28" rx="4" fill="#FB4415" opacity="0.2"/>
+      <rect x="227" y="130" width="36" height="28" rx="4" fill="#f0f0f0"/>
+      <rect x="113" y="162" width="28" height="5" rx="2" fill="#ddd"/>
+      <rect x="170" y="162" width="28" height="5" rx="2" fill="#ddd"/>
+      <rect x="227" y="162" width="28" height="5" rx="2" fill="#ddd"/>
     </svg>
   );
 }
 
-// ── Step 03 — Orbit SVG ───────────────────────────────────────────────────────
-
-function OrbitSVG() {
-  const rings = [
-    { r: 20, op: 1,   delay: 0   },
-    { r: 40, op: 0.7, delay: 0.3 },
-    { r: 65, op: 0.4, delay: 0.6 },
-    { r: 85, op: 0.2, delay: 0.9 },
-  ];
-  const arrows = [
-    ...([60, 180, 300].map(deg => ({ r: 65, deg }))),
-    ...([20, 140, 260].map(deg => ({ r: 85, deg }))),
-  ];
-
+function IllustrationBuild() {
   return (
-    <svg viewBox="0 0 200 200" className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px]">
-      {rings.map(c => (
-        <motion.circle key={c.r} cx="100" cy="100" r={c.r}
-          fill="none" stroke="#111111" strokeWidth={0.8} opacity={c.op}
-          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: c.delay, ease: 'easeInOut' as const }} />
-      ))}
-      <motion.circle cx="100" cy="100" r={6} fill="#111111"
-        initial={{ scale: 0 }} whileInView={{ scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }} />
-      {arrows.map(({ r, deg }, i) => {
-        const a = deg * (Math.PI / 180);
-        const cx = (100 + r * Math.cos(a)).toFixed(1);
-        const cy = (100 + r * Math.sin(a)).toFixed(1);
-        return (
-          <motion.g key={i}
-            transform={`translate(${cx},${cy}) rotate(${deg + 90})`}
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.3, delay: 1.3 + i * 0.08 }}>
-            <polygon points="0,-5 3,3 -3,3" fill="#111111" />
-          </motion.g>
-        );
-      })}
+    <svg viewBox="0 0 300 210" fill="none" style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <rect x="10" y="8" width="280" height="194" rx="14" fill="#111" stroke="#2a2a2a"/>
+      <rect x="10" y="8" width="280" height="30" rx="14" fill="#1e1e1e"/>
+      <rect x="10" y="26" width="280" height="12" fill="#1e1e1e"/>
+      <circle cx="32" cy="23" r="5" fill="#ff5f57"/>
+      <circle cx="49" cy="23" r="5" fill="#febc2e"/>
+      <circle cx="66" cy="23" r="5" fill="#28c840"/>
+      <rect x="28" y="48" width="30" height="6" rx="2" fill="#FB4415"/>
+      <rect x="64" y="48" width="52" height="6" rx="2" fill="#6366F1"/>
+      <rect x="122" y="48" width="34" height="6" rx="2" fill="#444"/>
+      <rect x="40" y="62" width="46" height="6" rx="2" fill="#6366F1"/>
+      <rect x="92" y="62" width="28" height="6" rx="2" fill="#10B981"/>
+      <rect x="126" y="62" width="24" height="6" rx="2" fill="#FB4415"/>
+      <rect x="40" y="76" width="62" height="6" rx="2" fill="#FB4415"/>
+      <rect x="108" y="76" width="38" height="6" rx="2" fill="#10B981"/>
+      <rect x="28" y="90" width="22" height="6" rx="2" fill="#6366F1"/>
+      <rect x="56" y="90" width="34" height="6" rx="2" fill="#444"/>
+      <rect x="40" y="104" width="76" height="6" rx="2" fill="#444"/>
+      <rect x="40" y="118" width="50" height="6" rx="2" fill="#6366F1"/>
+      <rect x="96" y="118" width="22" height="6" rx="2" fill="#FB4415"/>
+      <rect x="28" y="132" width="14" height="6" rx="2" fill="#6366F1"/>
+      <rect x="40" y="146" width="82" height="6" rx="2" fill="#444"/>
+      <rect x="128" y="146" width="32" height="6" rx="2" fill="#10B981"/>
+      <rect x="40" y="160" width="58" height="6" rx="2" fill="#444"/>
+      <rect x="28" y="174" width="4" height="12" rx="1" fill="#FB4415"/>
+      <rect x="10" y="184" width="280" height="18" fill="#1a1a1a"/>
+      <circle cx="32" cy="193" r="4" fill="#10B981"/>
+      <rect x="44" y="190" width="60" height="5" rx="2" fill="#333"/>
     </svg>
   );
 }
 
-// ── Step data ─────────────────────────────────────────────────────────────────
+function IllustrationLaunch() {
+  return (
+    <svg viewBox="0 0 300 210" fill="none" style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <rect x="10" y="8" width="280" height="194" rx="14" fill="#fafaf8" stroke="#e5e5e5" strokeWidth="1.5"/>
+      <rect x="10" y="8" width="280" height="30" rx="14" fill="#efefef"/>
+      <rect x="10" y="26" width="280" height="12" fill="#efefef"/>
+      <circle cx="32" cy="23" r="5" fill="#ff5f57"/>
+      <circle cx="49" cy="23" r="5" fill="#febc2e"/>
+      <circle cx="66" cy="23" r="5" fill="#28c840"/>
+      <rect x="18" y="46" width="80" height="44" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="108" y="46" width="80" height="44" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="198" y="46" width="84" height="44" rx="7" fill="#fff" stroke="#eee"/>
+      <rect x="26" y="56" width="36" height="10" rx="3" fill="#FB4415"/>
+      <rect x="26" y="70" width="56" height="5" rx="2" fill="#ddd"/>
+      <rect x="116" y="56" width="32" height="10" rx="3" fill="#10B981"/>
+      <rect x="116" y="70" width="50" height="5" rx="2" fill="#ddd"/>
+      <rect x="206" y="56" width="42" height="10" rx="3" fill="#6366F1"/>
+      <rect x="206" y="70" width="46" height="5" rx="2" fill="#ddd"/>
+      <rect x="18" y="100" width="264" height="88" rx="9" fill="#fff" stroke="#eee"/>
+      <line x1="32" y1="178" x2="270" y2="178" stroke="#eee" strokeWidth="1"/>
+      <line x1="32" y1="152" x2="270" y2="152" stroke="#eee" strokeWidth="0.7" strokeDasharray="5 4"/>
+      <line x1="32" y1="128" x2="270" y2="128" stroke="#eee" strokeWidth="0.7" strokeDasharray="5 4"/>
+      <polyline
+        points="32,176 60,168 90,158 120,148 150,136 180,128 210,118 240,110 268,104"
+        stroke="#FB4415" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
+      />
+      <polygon
+        points="32,176 60,168 90,158 120,148 150,136 180,128 210,118 240,110 268,104 268,178 32,178"
+        fill="#FB4415" opacity="0.08"
+      />
+      <circle cx="120" cy="148" r="4" fill="#fff" stroke="#FB4415" strokeWidth="2"/>
+      <circle cx="210" cy="118" r="4" fill="#fff" stroke="#FB4415" strokeWidth="2"/>
+      <circle cx="268" cy="104" r="5.5" fill="#FB4415"/>
+    </svg>
+  );
+}
+
+// ── S-curve dashed arrows (sized to the full track height) ────────────────────
+
+function ArrowDown() {
+  const hw = GW / 2;
+  return (
+    <svg width={GW} height={BH} fill="none" style={{ display: 'block', flexShrink: 0 }}>
+      <path
+        d={`M 3 ${CE} C ${hw} ${CE} ${hw} ${CO} ${GW - 3} ${CO}`}
+        stroke="#D0D0D0" strokeWidth="2.5" strokeDasharray="8 6" strokeLinecap="round"
+      />
+      <path
+        d={`M ${GW - 14} ${CO - 7} L ${GW - 2} ${CO} L ${GW - 14} ${CO + 7}`}
+        stroke="#D0D0D0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
+      />
+    </svg>
+  );
+}
+
+function ArrowUp() {
+  const hw = GW / 2;
+  return (
+    <svg width={GW} height={BH} fill="none" style={{ display: 'block', flexShrink: 0 }}>
+      <path
+        d={`M 3 ${CO} C ${hw} ${CO} ${hw} ${CE} ${GW - 3} ${CE}`}
+        stroke="#D0D0D0" strokeWidth="2.5" strokeDasharray="8 6" strokeLinecap="round"
+      />
+      <path
+        d={`M ${GW - 14} ${CE - 7} L ${GW - 2} ${CE} L ${GW - 14} ${CE + 7}`}
+        stroke="#D0D0D0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
+      />
+    </svg>
+  );
+}
+
+// ── Steps data ─────────────────────────────────────────────────────────────────
 
 const STEPS = [
   {
-    num: '01', name: 'DISCOVER', sub: 'Strategy // Foundation',
-    SVG: RadarSVG,
-    desc: 'We start by understanding your business, your audience, and what actually makes you different. This is where we figure out the story you\'re telling, who needs to hear it, and how to position you to win.',
+    num: '01', title: 'Briefing',
+    desc: 'We learn your brand, goals, and what makes you stand out.',
+    Illustration: IllustrationBriefing,
   },
   {
-    num: '02', name: 'CREATE', sub: 'Design // Experience',
-    SVG: StarburstSVG,
-    desc: 'Your brand gets translated into a visual system that feels intentional. Every click, scroll, and CTA has a purpose. We build the experience that takes visitors from "this looks interesting" to "I need to work with them."',
+    num: '02', title: 'Strategy',
+    desc: 'A creative blueprint — every decision backed by positioning.',
+    Illustration: IllustrationStrategy,
   },
   {
-    num: '03', name: 'DELIVER', sub: 'Build // Convert',
-    SVG: OrbitSVG,
-    desc: 'We build it fast, clean, and ready to convert. Then we connect your tools, set up your systems, and hand you something that works for you — educating leads, filtering out the wrong ones, and delivering clients ready to buy.',
+    num: '03', title: 'Build',
+    desc: 'Fast sprints, clean code, bold design built to convert.',
+    Illustration: IllustrationBuild,
+  },
+  {
+    num: '04', title: 'Launch',
+    desc: 'Go live, iterate fast, and grow a brand that lasts.',
+    Illustration: IllustrationLaunch,
   },
 ] as const;
 
-// ── Main component ────────────────────────────────────────────────────────────
+// ── Component ──────────────────────────────────────────────────────────────────
 
 export default function HowItWorks() {
   return (
-    <section style={{ background: '#f5f5f0' }} className="px-6 py-12 lg:px-16 lg:py-20">
+    <section style={{ background: '#fff', padding: 'clamp(64px, 8vw, 100px) 0', overflow: 'hidden' }}>
 
-      {/* Section label */}
-      <div className="mb-8 lg:mb-0">
-        <span style={{
-          background: '#E05A00', color: '#ffffff',
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.1em',
-          padding: '5px 12px', borderRadius: 4, display: 'inline-block',
-          fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
+
+      {/* Heading */}
+      <div style={{
+        textAlign: 'center',
+        marginBottom: 'clamp(40px, 5vw, 64px)',
+        padding: '0 clamp(20px, 5vw, 64px)',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+          <div style={{ width: 36, height: 3, background: '#FB4415', borderRadius: 99 }} />
+          <div style={{ width: 8, height: 8, background: '#FB4415', borderRadius: '50%' }} />
+          <div style={{ width: 36, height: 3, background: '#FB4415', borderRadius: 99 }} />
+        </div>
+        <h2 style={{
+          margin: '0 0 14px',
+          fontFamily: ARCHIVO_BLACK, fontWeight: 900,
+          fontSize: 'clamp(32px, 5vw, 64px)',
+          color: '#0a0a0a', lineHeight: 1.1, letterSpacing: '-0.03em',
         }}>
-          PROCESS
-        </span>
+          How it works
+        </h2>
+        <p style={{
+          margin: '0 auto',
+          fontFamily: ARCHIVO, fontSize: 'clamp(14px, 1.2vw, 17px)',
+          color: '#888', lineHeight: 1.6, maxWidth: 440,
+        }}>
+          From brief to launch in four clear steps — structured, transparent, and built to convert.
+        </p>
       </div>
 
-      {/* Main layout */}
-      <div className="flex flex-col lg:flex-row lg:gap-12 mt-8">
-
-        {/* ── Left sticky heading ── */}
-        <motion.div
-          className="w-full lg:w-[25%] lg:sticky lg:top-20 lg:self-start mb-10 lg:mb-0"
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        >
-          <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800,
-            color: '#111111', lineHeight: 1.1, letterSpacing: '-1px',
-            fontFamily: 'var(--font-archivo-black), "Archivo Black", sans-serif',
-          }}>
-            HOW IT<br />WORKS
-          </h2>
-          <p style={{
-            fontSize: 14, color: '#666666', lineHeight: 1.6,
-            maxWidth: 200, marginTop: 12,
-            fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
-          }}>
-            Here's how we take you from brief to a brand that converts:
-          </p>
-          <a href="#" style={{
-            fontSize: 13, color: '#E05A00', fontWeight: 500,
-            textDecoration: 'none', marginTop: 20, display: 'block',
-            fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
-          }}>
-            See our work ↗
-          </a>
-        </motion.div>
-
-        {/* ── Three steps ── */}
-        <div className="w-full lg:w-[75%] flex flex-col">
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-black/10">
-            {STEPS.map((step, i) => {
-              const { SVG } = step;
-              return (
-                <motion.div
-                  key={step.num}
-                  className="flex flex-col items-center text-center py-8 md:py-0 px-6 lg:px-8 first:pt-0 md:first:pt-0"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.15, ease: [0.25, 0, 0, 1] }}
-                >
-                  {/* Step number */}
-                  <p style={{
-                    fontSize: 13, color: '#999999', fontWeight: 400,
-                    letterSpacing: '0.05em', marginBottom: 8,
-                    fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
+      {/* ── Swiper zig-zag track ── */}
+      <Swiper
+        modules={[FreeMode]}
+        freeMode
+        grabCursor
+        slidesPerView="auto"
+        spaceBetween={0}
+        style={{ paddingLeft: 'clamp(24px, 6vw, 64px)', paddingBottom: ZZ + 16 }}
+      >
+        {STEPS.map((step, i) => {
+          const isDown = i % 2 !== 0;
+          const { Illustration } = step;
+          return (
+            <SwiperSlide
+              key={step.num}
+              style={{
+                width: 'auto',
+                display: 'flex',
+                alignItems: 'flex-start',
+                flexShrink: 0,
+              }}
+            >
+              {/* Card + arrow wrapper */}
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <div style={{ width: CW, marginTop: isDown ? ZZ : 0 }}>
+                  {/* Illustration */}
+                  <div style={{
+                    borderRadius: 18, overflow: 'hidden',
+                    border: '1.5px solid #E8E8E8', background: '#fafaf8',
+                    marginBottom: 16, boxShadow: '0 6px 24px rgba(0,0,0,0.07)',
                   }}>
-                    {step.num}
-                  </p>
-
-                  {/* Step name */}
-                  <h3 style={{
-                    fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800,
-                    color: '#E05A00', letterSpacing: '-1px', lineHeight: 1,
-                    fontFamily: 'var(--font-archivo-black), "Archivo Black", sans-serif',
-                  }}>
-                    {step.name}
-                  </h3>
-
-                  {/* Subtitle */}
-                  <p style={{
-                    fontSize: 13, color: '#888888', marginTop: 4,
-                    fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
-                  }}>
-                    {step.sub}
-                  </p>
-
-                  {/* SVG illustration */}
-                  <div className="my-8 flex items-center justify-center">
-                    <SVG />
+                    <Illustration />
                   </div>
 
-                  {/* Description */}
+                  {/* Badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
+                    <span style={{
+                      width: 28, height: 28, borderRadius: '50%',
+                      background: '#FB4415', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 11, fontWeight: 900, color: '#fff', fontFamily: ARCHIVO_BLACK,
+                    }}>
+                      {step.num}
+                    </span>
+                    <span style={{
+                      fontFamily: ARCHIVO, fontWeight: 700, fontSize: 11,
+                      color: '#FB4415', letterSpacing: '0.12em', textTransform: 'uppercase',
+                    }}>
+                      Step {step.num}
+                    </span>
+                  </div>
+
+                  <h3 style={{
+                    margin: '0 0 7px', fontFamily: ARCHIVO_BLACK, fontWeight: 900,
+                    fontSize: 20, color: '#0a0a0a', letterSpacing: '-0.02em', lineHeight: 1.2,
+                  }}>
+                    {step.title}
+                  </h3>
                   <p style={{
-                    fontSize: 14, color: '#444444', lineHeight: 1.75,
-                    textAlign: 'center', padding: '0 8px',
-                    fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
+                    margin: 0, fontFamily: ARCHIVO, fontWeight: 400,
+                    fontSize: 13, color: '#777', lineHeight: 1.65,
                   }}>
                     {step.desc}
                   </p>
-                </motion.div>
-              );
-            })}
-          </div>
+                </div>
 
-          {/* Bottom row */}
-          <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.1)' }} className="mt-10 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p style={{
-              fontSize: 14, color: '#666666',
-              fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
-            }}>
-              Every project starts with a free discovery call.
-            </p>
-            <button
-              style={{
-                background: '#111111', color: '#ffffff',
-                borderRadius: 999, padding: '11px 24px',
-                fontSize: 13, fontWeight: 500, border: 'none',
-                cursor: 'pointer', transition: 'background 0.2s ease',
-                fontFamily: 'var(--font-archivo), "Archivo", sans-serif',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#E05A00'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#111111'; }}
-            >
-              Book your call →
-            </button>
-          </div>
-        </div>
+                {/* Arrow */}
+                {i < STEPS.length - 1 && (isDown ? <ArrowUp /> : <ArrowDown />)}
+              </div>
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
 
+      {/* Swipe hint */}
+      <div style={{
+        textAlign: 'center', marginTop: 20,
+        padding: '0 clamp(20px, 5vw, 64px)',
+      }}>
+        <span style={{
+          fontFamily: ARCHIVO, fontSize: 12,
+          color: '#C8C8C8', letterSpacing: '0.06em',
+        }}>
+          ← swipe to explore →
+        </span>
       </div>
+
     </section>
   );
 }
