@@ -1,5 +1,6 @@
 import { Plus_Jakarta_Sans, Newsreader } from 'next/font/google';
 import CustomCursor from '@/components/landing/CustomCursor';
+import WhatsAppButton from '@/components/landing/WhatsAppButton';
 
 const globalAnimations = `
   /* ── Keyframes ── */
@@ -132,6 +133,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
     >
       <style>{globalAnimations}</style>
       <CustomCursor />
+      <WhatsAppButton />
       {children}
     </div>
   );

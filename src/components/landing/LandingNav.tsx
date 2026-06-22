@@ -105,7 +105,6 @@ export default function LandingNav() {
               border: 'none',
               cursor: 'pointer',
               padding: 6,
-              display: 'none',
               flexDirection: 'column',
               gap: 5,
               alignItems: 'center',
@@ -113,9 +112,17 @@ export default function LandingNav() {
             }}
             aria-label="Toggle menu"
           >
-            <span style={{ display: 'block', width: 22, height: 2, background: '#0c0c0c', borderRadius: 2 }} />
-            <span style={{ display: 'block', width: 22, height: 2, background: '#0c0c0c', borderRadius: 2 }} />
-            <span style={{ display: 'block', width: 14, height: 2, background: '#0c0c0c', borderRadius: 2, alignSelf: 'flex-start' }} />
+            {menuOpen ? (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 4L16 16M16 4L4 16" stroke="#0c0c0c" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <>
+                <span style={{ display: 'block', width: 22, height: 2, background: '#0c0c0c', borderRadius: 2 }} />
+                <span style={{ display: 'block', width: 22, height: 2, background: '#0c0c0c', borderRadius: 2 }} />
+                <span style={{ display: 'block', width: 14, height: 2, background: '#0c0c0c', borderRadius: 2, alignSelf: 'flex-start' }} />
+              </>
+            )}
           </button>
         </div>
 
